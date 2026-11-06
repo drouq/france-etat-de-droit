@@ -18,3 +18,4 @@
 
 # Server-only files prepared locally (secrets), never committed
 /server-private/
+/HANDOFF.md
