@@ -15,3 +15,6 @@
 /source-content/
 /PRD-*.md
 /review/
+
+# Server-only files prepared locally (secrets), never committed
+/server-private/
