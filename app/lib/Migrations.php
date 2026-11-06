@@ -123,6 +123,68 @@ final class Migrations
                 ]);
                 Pages::recordVersion($id, 'installation', 'Création');
             },
+            3 => function (): void {
+                // Association texts (November 2026). Only replaces the home page while it still
+                // holds the installation placeholders: an edited home page is never overwritten.
+                $home = Pages::home();
+                if ($home !== null && strpos((string) $home['blocks'], '[À COMPLÉTER : présentation de l') !== false) {
+                    $intro = '<h2>Qui sommes-nous ?</h2>'
+                        . '<p>France État de Droit est née d\'un constat d\'urgence : la fragilisation croissante des normes'
+                        . ' qui protègent les plus vulnérables et garantissent nos libertés fondamentales.</p>'
+                        . '<p>Fondée par des professionnels et des citoyens engagés, issus essentiellement des mondes de la justice,'
+                        . ' de la santé et du médico-social, notre association agit comme un rempart contre les dérives'
+                        . ' populistes et illibérales.</p>'
+                        . '<h2>Notre raison d\'être</h2>'
+                        . '<p>L\'État de droit n\'est pas un concept abstrait : c\'est notre cadre protecteur commun. Il garantit concrètement :</p>'
+                        . '<ul>'
+                        . '<li>les droits des femmes et l\'accès aux soins pour tous ;</li>'
+                        . '<li>la dignité des personnes incarcérées et les droits des personnes handicapées ;</li>'
+                        . '<li>le respect des droits fondamentaux de tout être humain, français ou étranger ;</li>'
+                        . '<li>la préservation de notre environnement.</li>'
+                        . '</ul>'
+                        . '<p>Lorsque ce cadre est contourné et fissuré, c\'est la protection de chacun qui s\'effondre.</p>'
+                        . '<h2>Notre méthode : raisonner en droit</h2>'
+                        . '<p>Loin des surenchères politiques, nous situons notre action au sein de l\'arc républicain.'
+                        . ' Notre force réside dans la rigueur juridique.</p>';
+                    $method = [
+                        ['media_id' => null, 'url' => '', 'title' => '1. Analyser',
+                            'text' => 'Passer au crible les actes litigieux au regard du droit en vigueur : Constitution, traités européens, grands principes du droit.'],
+                        ['media_id' => null, 'url' => '', 'title' => '2. Agir en justice',
+                            'text' => 'Agir de manière non violente, par des recours devant les instances supérieures (Conseil d\'État, Conseil constitutionnel, CEDH, CJUE), pour faire censurer les mesures contraires aux droits et libertés.'],
+                        ['media_id' => null, 'url' => '', 'title' => '3. Rester indépendants',
+                            'text' => 'Nous ne jugeons pas les opinions, mais la conformité des actes à la loi.'],
+                    ];
+                    $commitment = '<h2>Notre engagement</h2>'
+                        . '<p>Qu\'il s\'agisse de défendre l\'indépendance de la justice ou de préserver les droits des personnes'
+                        . ' privées de liberté, France État de Droit veille à ce que la force reste à la loi protectrice,'
+                        . ' et non à l\'arbitraire.</p>'
+                        . '<blockquote><p>« Chaque génération se croit vouée à refaire le monde. La mienne sait qu\'elle ne le refera pas.'
+                        . ' Mais sa tâche est peut-être plus grande. Elle consiste à empêcher que le monde ne se défasse. »</p>'
+                        . '<p>— Albert Camus</p></blockquote>';
+                    $blocks = [
+                        ['type' => 'text', 'html' => Sanitizer::html($intro)],
+                        ['type' => 'cards', 'cards' => $method],
+                        ['type' => 'text', 'html' => Sanitizer::html($commitment)],
+                    ];
+                    Db::update('pages', (int) $home['id'], [
+                        'blocks' => json_encode($blocks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        'updated_at' => now_iso(),
+                        'updated_by' => 'contenu initial',
+                    ]);
+                    Pages::recordVersion((int) $home['id'], 'contenu initial', 'Textes de l\'association');
+                }
+                $defaults = [
+                    'tagline' => 'Raisonner en droit pour protéger les libertés fondamentales',
+                    'site_description' => 'Association de professionnels et de citoyens engagés, issus de la justice, de la santé'
+                        . ' et du médico-social, qui défend l\'État de droit et les libertés fondamentales par des recours juridiques non violents.',
+                ];
+                foreach ($defaults as $key => $value) {
+                    $current = Db::value('SELECT value FROM settings WHERE key = ?', [$key]);
+                    if ($current === null || $current === '') {
+                        Settings::set($key, $value);
+                    }
+                }
+            },
         ];
     }
 

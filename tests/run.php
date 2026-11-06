@@ -95,6 +95,11 @@ Migrations::run();
 Migrations::run(); // twice: must be safe
 check('schema at latest version', Migrations::currentVersion() === Migrations::latestVersion());
 check('home page seeded once', (int) Db::value('SELECT COUNT(*) FROM pages WHERE is_home = 1') === 1);
+$homeBlocks = (string) Pages::home()['blocks'];
+check('association texts replace the placeholders', strpos($homeBlocks, 'rempart') !== false && strpos($homeBlocks, 'À COMPLÉTER') === false);
+check('home has text, method cards and quote', count(Pages::blocks(Pages::home())) === 3 && strpos($homeBlocks, 'Albert Camus') !== false);
+check('tagline filled', Settings::get('tagline') !== '');
+check('home history records the texts', Pages::versions((int) Pages::home()['id'])[0]['note'] === 'Textes de l\'association');
 check('data folder protected', is_file(DATA_PATH . '/.htaccess'));
 check('media folder protected', is_file(PUBLIC_PATH . '/media/.htaccess'));
 
