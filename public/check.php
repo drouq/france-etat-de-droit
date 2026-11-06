@@ -161,13 +161,15 @@ if ($root === null) {
     foreach (['' => 'Dossier « data »', '/originals' => 'data/originals', '/sessions' => 'data/sessions', '/logs' => 'data/logs'] as $sub => $label) {
         $dir = $dataPath . $sub;
         if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
+            if ($config) {
+                @mkdir($dir, 0755, true); // only once we know where config.php is
+            }
         }
         $ok = is_dir($dir) && is_writable($dir);
         row('Fichiers', $label . ' accessible en écriture', $ok ? 'OK' : 'ERREUR', $ok ? $dir : 'Impossible d\'écrire dans ' . $dir . '. Vérifiez les droits du dossier (755) dans FileZilla.');
     }
     $media = !empty($config['media_path']) ? rtrim((string) $config['media_path'], '/\\') : ($privateLayout ? $configDir . '/media' : __DIR__ . '/media');
-    if (!is_dir($media)) {
+    if (!is_dir($media) && $config) {
         @mkdir($media, 0755, true);
     }
     row('Fichiers', 'Dossier « media » accessible en écriture', is_writable($media) ? 'OK' : 'ERREUR', $media);

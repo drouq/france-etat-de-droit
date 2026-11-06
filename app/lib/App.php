@@ -25,6 +25,13 @@ final class App
     {
         $path = Http::path();
         $isAdmin = $path === '/admin' || starts_with($path, '/admin/');
+        // Used by check.php to test address rewriting. Answers even before config.php exists.
+        if ($path === '/__rewrite-check') {
+            header('Content-Type: text/plain; charset=utf-8');
+            header('X-Robots-Tag: noindex');
+            echo 'rewrite-ok';
+            return;
+        }
         try {
             if (!Config::isLoaded()) {
                 self::plainError(503, 'Site en cours d\'installation : le fichier config.php est absent. '
