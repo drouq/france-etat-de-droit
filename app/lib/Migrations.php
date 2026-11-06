@@ -185,6 +185,78 @@ final class Migrations
                     }
                 }
             },
+            4 => function (): void {
+                // "Nos statuts" and "Adhérer" pages (November 2026). Each page is created only if
+                // its address is free, so nothing an editor made is ever replaced.
+                $statuts = '<p>Extraits des statuts de l\'association « France État de Droit ».</p>'
+                    . '<h2>Article 1 : objet de l\'association</h2>'
+                    . '<p>L\'objet de l\'association « France État de Droit » est la défense des libertés et des droits des personnes,'
+                    . ' quelles qu\'elles soient, et de l\'État de droit qui garantit le respect de ces libertés et de ces droits.</p>'
+                    . '<p>Par ses actions, l\'association « France État de Droit » s\'oppose à toute mesure individuelle ou collective'
+                    . ' visant ou révélant un traitement discriminatoire, une action contraire à la préservation de l\'environnement,'
+                    . ' ou une atteinte à l\'État de droit.</p>'
+                    . '<p>La durée de l\'association est illimitée. Elle a son siège social au 19 avenue d\'Italie à Paris'
+                    . ' (13e arrondissement).</p>'
+                    . '<h2>Article 2 : moyens d\'action de l\'association</h2>'
+                    . '<p>Les moyens privilégiés d\'action de l\'association « France État de Droit » sont l\'utilisation des voies'
+                    . ' légales, les actions non violentes et la réunion de moyens matériels, financiers, techniques et humains'
+                    . ' afin de faciliter :</p>'
+                    . '<ul>'
+                    . '<li>la défense et le soutien des personnes, institutions, établissements, mouvements et associations œuvrant'
+                    . ' de manière non violente pour le maintien de l\'État de droit, le respect des libertés et des droits des'
+                    . ' personnes, et la préservation de l\'environnement ;</li>'
+                    . '<li>la mise en place d\'actions de connaissance des libertés et des droits des personnes dans le cadre'
+                    . ' d\'un État de droit ;</li>'
+                    . '<li>la création d\'espaces de dialogue, de réflexion et d\'analyse critique ;</li>'
+                    . '<li>toute autre action utile à la réalisation de l\'objet de l\'association.</li>'
+                    . '</ul>'
+                    . '<p>À ce titre, l\'association peut avoir recours, notamment, à des actions en justice, des publications,'
+                    . ' des manifestations, des expositions, des conférences, des cours, des bourses, des concours, des prix et'
+                    . ' des récompenses, et des secours. Elle peut aussi organiser des comités locaux et des sections.</p>';
+                $adherer = '<h2>Pourquoi nous rejoindre</h2>'
+                    . '<p>En rejoignant « France État de Droit », vous décidez, pour préserver les libertés et l\'environnement,'
+                    . ' de vous opposer à l\'application des idées populistes et illibérales.</p>'
+                    . '<p>L\'État de droit n\'étant pas pour vous un concept abstrait, mais un cadre protecteur concret, vous'
+                    . ' choisissez l\'action par le droit, la non-violence et au sein de l\'arc républicain.</p>'
+                    . '<h2>Votre engagement</h2>'
+                    . '<p>Vous adhérez aux valeurs inscrites dans les <a href="/statuts">statuts</a> et la charte des principes'
+                    . ' d\'action de l\'association, et vous vous engagez à les respecter.</p>'
+                    . '<h2>Adhérer en ligne</h2>'
+                    . '<p>L\'adhésion se fait sur HelloAsso, la plateforme de paiement des associations. Le paiement est sécurisé.</p>'
+                    . '<p><a class="btn" href="' . Settings::adhesionUrl() . '">Adhérer sur HelloAsso</a></p>';
+                $pages = [
+                    ['Nos statuts', 'statuts', $statuts, 'Extraits des statuts de France État de Droit : objet de l\'association et moyens d\'action.'],
+                    ['Adhérer', 'adherer', $adherer, 'Rejoindre France État de Droit : agir par le droit, la non-violence et au sein de l\'arc républicain.'],
+                ];
+                foreach ($pages as $spec) {
+                    list($title, $slug, $html, $description) = $spec;
+                    if (Pages::slugTaken($slug, null) || Db::value('SELECT page_id FROM redirects WHERE old_slug = ?', [$slug]) !== null) {
+                        continue;
+                    }
+                    $now = now_iso();
+                    $id = Db::insert('pages', [
+                        'parent_id' => null,
+                        'position' => (int) Db::value('SELECT COALESCE(MAX(position), 0) + 1 FROM pages WHERE parent_id IS NULL'),
+                        'title' => $title,
+                        'slug' => $slug,
+                        'status' => 'published',
+                        'show_in_menu' => 1,
+                        'show_in_footer' => 0,
+                        'is_home' => 0,
+                        'seo_title' => '',
+                        'seo_description' => $description,
+                        'blocks' => json_encode([['type' => 'text', 'html' => Sanitizer::html($html)]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                        'updated_by' => 'contenu initial',
+                    ]);
+                    Pages::recordVersion($id, 'contenu initial', 'Textes de l\'association');
+                }
+                $footer = Db::value("SELECT value FROM settings WHERE key = 'footer_text'");
+                if ($footer === null || $footer === '') {
+                    Settings::set('footer_text', 'Siège social : 19 avenue d\'Italie, 75013 Paris.');
+                }
+            },
         ];
     }
 

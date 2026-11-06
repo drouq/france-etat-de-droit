@@ -99,6 +99,12 @@ $homeBlocks = (string) Pages::home()['blocks'];
 check('association texts replace the placeholders', strpos($homeBlocks, 'rempart') !== false && strpos($homeBlocks, 'À COMPLÉTER') === false);
 check('home has text, method cards and quote', count(Pages::blocks(Pages::home())) === 3 && strpos($homeBlocks, 'Albert Camus') !== false);
 check('tagline filled', Settings::get('tagline') !== '');
+$statutsPage = Pages::findBySlug('statuts');
+$adhererPage = Pages::findBySlug('adherer');
+check('statutes page created, published, in menu', $statutsPage !== null && $statutsPage['status'] === 'published' && (int) $statutsPage['show_in_menu'] === 1
+    && strpos((string) $statutsPage['blocks'], 'Article 2') !== false);
+check('membership page has the HelloAsso button', $adhererPage !== null && strpos((string) $adhererPage['blocks'], 'href=\"https://www.helloasso.com/associations/france-etat-de-droit\" class=\"btn\"') !== false, (string) ($adhererPage['blocks'] ?? ''));
+check('footer shows the registered office', strpos(Settings::get('footer_text'), '19 avenue d\'Italie') !== false);
 check('home history records the texts', Pages::versions((int) Pages::home()['id'])[0]['note'] === 'Textes de l\'association');
 check('data folder protected', is_file(DATA_PATH . '/.htaccess'));
 check('media folder protected', is_file(PUBLIC_PATH . '/media/.htaccess'));
