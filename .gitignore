@@ -1,0 +1,17 @@
+# Real settings and site data: never in git, never in dist
+/config.php
+/data/
+/public/media/*
+!/public/media/.htaccess
+
+# Local tools and build output
+/tools/
+/dist/
+/editor-src/node_modules/
+/tests/tmp/
+/screenshots-src/node_modules/
+
+# Input files and project notes (kept local)
+/source-content/
+/PRD-*.md
+/review/
