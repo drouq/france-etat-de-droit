@@ -118,8 +118,19 @@ check('rule-of-law page shows the triangle and the pyramid', count($edImages) ==
 check('diagrams have alt text and web versions', count(array_filter($edMedia, function (array $m): bool {
     return $m['alt'] !== '' && is_file(Media::publicDir() . '/' . $m['token'] . '-480.' . $m['web_ext']);
 })) === 2);
+check('statutes page has the full amended text', strpos((string) $statutsPage['blocks'], 'Article 15 : modification des statuts') !== false
+    && strpos((string) $statutsPage['blocks'], '19 novembre 2025') !== false && strpos((string) $statutsPage['blocks'], 'Extraits') === false
+    && strpos((string) $statutsPage['blocks'], 'W751278857') !== false);
+$chartePage = Pages::findBySlug('charte');
+$charteBlocks = $chartePage !== null ? Pages::blocks($chartePage) : [];
+check('charter page created with six principles', $chartePage !== null && $chartePage['status'] === 'published' && (int) $chartePage['show_in_menu'] === 1
+    && count($charteBlocks) === 3 && count($charteBlocks[1]['cards']) === 6 && $charteBlocks[1]['cards'][0]['title'] === 'Raisonner en droit');
+check('membership page links the charter and lists the fees', strpos((string) $adhererPage['blocks'], 'href=\"/charte\"') !== false
+    && strpos((string) $adhererPage['blocks'], '100 €') !== false, (string) ($adhererPage['blocks'] ?? ''));
+check('footer shows the official identifiers', strpos(str_replace("\u{a0}", ' ', Settings::get('footer_text')), 'SIRET 943 896 340 00016') !== false
+    && strpos(Settings::get('footer_text'), "943\u{a0}896") !== false);
 $menuSlugs = array_column(Db::all('SELECT slug FROM pages WHERE parent_id IS NULL AND is_home = 0 ORDER BY position'), 'slug');
-check('rule-of-law page comes first in the menu', array_slice($menuSlugs, 0, 3) === ['etat-de-droit', 'statuts', 'adherer'], implode(',', $menuSlugs));
+check('rule-of-law page comes first in the menu', array_slice($menuSlugs, 0, 4) === ['etat-de-droit', 'statuts', 'charte', 'adherer'], implode(',', $menuSlugs));
 check('footer shows the registered office', strpos(Settings::get('footer_text'), '19 avenue d\'Italie') !== false);
 check('home history records the texts', Pages::versions((int) Pages::home()['id'])[0]['note'] === 'Textes de l\'association');
 check('data folder protected', is_file(DATA_PATH . '/.htaccess'));
