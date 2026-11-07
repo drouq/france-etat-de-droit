@@ -257,6 +257,13 @@ final class Migrations
                     Settings::set('footer_text', 'Siège social : 19 avenue d\'Italie, 75013 Paris.');
                 }
             },
+            5 => function (): void {
+                // The association's motto (from its logo) becomes the tagline, unless an editor changed it.
+                $tagline = Db::value("SELECT value FROM settings WHERE key = 'tagline'");
+                if ($tagline === null || $tagline === '' || $tagline === 'Raisonner en droit pour protéger les libertés fondamentales') {
+                    Settings::set('tagline', 'La loi veille et protège');
+                }
+            },
         ];
     }
 

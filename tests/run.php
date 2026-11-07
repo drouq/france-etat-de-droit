@@ -98,7 +98,7 @@ check('home page seeded once', (int) Db::value('SELECT COUNT(*) FROM pages WHERE
 $homeBlocks = (string) Pages::home()['blocks'];
 check('association texts replace the placeholders', strpos($homeBlocks, 'rempart') !== false && strpos($homeBlocks, 'À COMPLÉTER') === false);
 check('home has text, method cards and quote', count(Pages::blocks(Pages::home())) === 3 && strpos($homeBlocks, 'Albert Camus') !== false);
-check('tagline filled', Settings::get('tagline') !== '');
+check('tagline is the motto', Settings::get('tagline') === 'La loi veille et protège');
 $statutsPage = Pages::findBySlug('statuts');
 $adhererPage = Pages::findBySlug('adherer');
 check('statutes page created, published, in menu', $statutsPage !== null && $statutsPage['status'] === 'published' && (int) $statutsPage['show_in_menu'] === 1
