@@ -457,6 +457,49 @@ final class Migrations
                 ]);
                 Pages::recordVersion($id, 'contenu initial', 'Module 1 de la formation');
             },
+            7 => function (): void {
+                // The triangle and Kelsen pyramid diagrams from training module 1, added to the media
+                // library and placed in the "L'État de droit" page, only while that page is untouched.
+                $page = Pages::findBySlug('etat-de-droit');
+                if ($page === null || $page['updated_by'] !== 'contenu initial' || strpos((string) $page['blocks'], 'data-media-id') !== false) {
+                    return;
+                }
+                $blocks = Pages::blocks($page);
+                if (count($blocks) !== 3 || ($blocks[2]['type'] ?? '') !== 'text') {
+                    return;
+                }
+                $images = [
+                    'triangle' => ['triangle-etat-de-droit.png', 'Le triangle de l\'État de droit : les droits fondamentaux'
+                        . ' sont garantis par leur place au sommet de la hiérarchie des normes et par des juges indépendants ;'
+                        . ' la hiérarchie des normes est garantie par des juges indépendants.'],
+                    'pyramid' => ['pyramide-de-kelsen.png', 'La pyramide de Kelsen, du sommet à la base : bloc constitutionnel,'
+                        . ' bloc conventionnel (traités, droit européen), bloc législatif (lois, ordonnances), principes généraux'
+                        . ' du droit, bloc réglementaire (décrets, arrêtés, circulaires).'],
+                ];
+                $tags = [];
+                try {
+                    foreach ($images as $key => $spec) {
+                        list($file, $alt) = $spec;
+                        $media = Media::store(APP_PATH . '/content/' . $file, $file, 'contenu initial');
+                        Media::setAlt((int) $media['id'], $alt);
+                        $tags[$key] = '<p><img src="' . Media::url($media) . '" data-media-id="' . $media['id'] . '" alt="' . e($alt) . '"></p>';
+                    }
+                } catch (Throwable $error) {
+                    // Never block the site over an image: leave the page as it is.
+                    error_log('Migration 7: ' . $error->getMessage());
+                    return;
+                }
+                $html = (string) $blocks[2]['html'];
+                $html = preg_replace('~</ul>~', '</ul>' . $tags['triangle'], $html, 1);
+                $html = preg_replace('~(contrôlés par le juge administratif\.</li></ol>)~u', '$1' . $tags['pyramid'], $html, 1);
+                $blocks[2]['html'] = Sanitizer::html((string) $html);
+                Db::update('pages', (int) $page['id'], [
+                    'blocks' => json_encode($blocks, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    'updated_at' => now_iso(),
+                ]);
+                Pages::updateMediaUsage((int) $page['id']);
+                Pages::recordVersion((int) $page['id'], 'contenu initial', 'Schémas du module 1');
+            },
         ];
     }
 

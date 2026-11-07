@@ -110,6 +110,14 @@ check('rule-of-law page created, published, in menu', $edPage !== null && $edPag
     && count($edBlocks) === 3 && $edBlocks[1]['type'] === 'cards' && count($edBlocks[1]['cards']) === 3);
 check('rule-of-law page keeps its links and lists', $edPage !== null && strpos((string) $edPage['blocks'], 'href=\"https://www.conseil-constitutionnel.fr/decision/2007/2007551DC.htm\"') !== false
     && strpos((string) $edPage['blocks'], '<ol>') !== false && strpos((string) $edPage['blocks'], 'href=\"/adherer\" class=\"btn\"') !== false, (string) ($edPage['blocks'] ?? ''));
+$edImages = $edPage !== null ? Pages::mediaIds($edPage) : [];
+$edMedia = Media::findMany($edImages);
+check('rule-of-law page shows the triangle and the pyramid', count($edImages) === 2 && count($edMedia) === 2
+    && strpos((string) $edBlocks[2]['html'], 'Hans Kelsen') < strpos((string) $edBlocks[2]['html'], 'data-media-id="' . $edImages[1] . '"')
+    && count(Media::usage($edImages[0])) === 1, implode(',', $edImages));
+check('diagrams have alt text and web versions', count(array_filter($edMedia, function (array $m): bool {
+    return $m['alt'] !== '' && is_file(Media::publicDir() . '/' . $m['token'] . '-480.' . $m['web_ext']);
+})) === 2);
 $menuSlugs = array_column(Db::all('SELECT slug FROM pages WHERE parent_id IS NULL AND is_home = 0 ORDER BY position'), 'slug');
 check('rule-of-law page comes first in the menu', array_slice($menuSlugs, 0, 3) === ['etat-de-droit', 'statuts', 'adherer'], implode(',', $menuSlugs));
 check('footer shows the registered office', strpos(Settings::get('footer_text'), '19 avenue d\'Italie') !== false);
