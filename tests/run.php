@@ -104,6 +104,14 @@ $adhererPage = Pages::findBySlug('adherer');
 check('statutes page created, published, in menu', $statutsPage !== null && $statutsPage['status'] === 'published' && (int) $statutsPage['show_in_menu'] === 1
     && strpos((string) $statutsPage['blocks'], 'Article 2') !== false);
 check('membership page has the HelloAsso button', $adhererPage !== null && strpos((string) $adhererPage['blocks'], 'href=\"https://www.helloasso.com/associations/france-etat-de-droit\" class=\"btn\"') !== false, (string) ($adhererPage['blocks'] ?? ''));
+$edPage = Pages::findBySlug('etat-de-droit');
+$edBlocks = $edPage !== null ? Pages::blocks($edPage) : [];
+check('rule-of-law page created, published, in menu', $edPage !== null && $edPage['status'] === 'published' && (int) $edPage['show_in_menu'] === 1
+    && count($edBlocks) === 3 && $edBlocks[1]['type'] === 'cards' && count($edBlocks[1]['cards']) === 3);
+check('rule-of-law page keeps its links and lists', $edPage !== null && strpos((string) $edPage['blocks'], 'href=\"https://www.conseil-constitutionnel.fr/decision/2007/2007551DC.htm\"') !== false
+    && strpos((string) $edPage['blocks'], '<ol>') !== false && strpos((string) $edPage['blocks'], 'href=\"/adherer\" class=\"btn\"') !== false, (string) ($edPage['blocks'] ?? ''));
+$menuSlugs = array_column(Db::all('SELECT slug FROM pages WHERE parent_id IS NULL AND is_home = 0 ORDER BY position'), 'slug');
+check('rule-of-law page comes first in the menu', array_slice($menuSlugs, 0, 3) === ['etat-de-droit', 'statuts', 'adherer'], implode(',', $menuSlugs));
 check('footer shows the registered office', strpos(Settings::get('footer_text'), '19 avenue d\'Italie') !== false);
 check('home history records the texts', Pages::versions((int) Pages::home()['id'])[0]['note'] === 'Textes de l\'association');
 check('data folder protected', is_file(DATA_PATH . '/.htaccess'));
