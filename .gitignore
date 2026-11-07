@@ -19,3 +19,6 @@
 # Server-only files prepared locally (secrets), never committed
 /server-private/
 /HANDOFF.md
+
+# Local Claude desktop app settings (browser preview)
+/.claude/
