@@ -20,7 +20,7 @@
 </head>
 <body class="admin admin-login">
 <main id="contenu" class="login-box">
-  <img src="<?= e(asset('img/logo.webp')) ?>" width="96" height="96" alt="" class="login-logo">
+  <img src="<?= e(asset('img/logo-mark.webp')) ?>" width="96" height="96" alt="" class="login-logo">
   <h1>Administration du site</h1>
   <p class="login-site"><?= e(Settings::get('site_name')) ?></p>
   <?php foreach ($flash as $message): ?>

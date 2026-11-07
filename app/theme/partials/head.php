@@ -6,8 +6,8 @@
 $settings = Settings::all();
 $favicon = Renderer::media(Settings::mediaId('favicon_media_id'));
 $image = $meta['image'] ?? null;
-$imageUrl = $image !== null ? absolute_url(Media::url($image, 1600)) : absolute_url(asset('img/logo.png'));
-$largeImage = $image !== null && Media::displaySize($image)[0] >= 600;
+$imageUrl = $image !== null ? absolute_url(Media::url($image, 1600)) : absolute_url(asset('img/og-default.jpg'));
+$largeImage = $image === null || Media::displaySize($image)[0] >= 600; // the default share image is 1200 x 630
 ?>
 <!DOCTYPE html>
 <html lang="fr">

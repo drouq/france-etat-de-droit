@@ -35,7 +35,7 @@ echo View::theme('partials/head', ['meta' => $meta]);
         <?php elseif ($logo !== null): ?>
           <?= Renderer::img($logo, '15rem', '', false, 'hero-logo') ?>
         <?php else: ?>
-          <img class="hero-logo" src="<?= e(asset('img/logo.webp')) ?>" width="140" height="140" alt="">
+          <img class="hero-logo" src="<?= e(asset('img/logo.webp')) ?>" width="800" height="845" alt="" fetchpriority="high">
         <?php endif; ?>
       </div>
     </div>

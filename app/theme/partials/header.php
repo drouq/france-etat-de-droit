@@ -23,7 +23,7 @@ $isHomePage = !empty($page) && (int) $page['is_home'] === 1;
       <?php if ($logo !== null): ?>
         <?= Renderer::img($logo, '64px', '', false, 'brand-logo') ?>
       <?php else: ?>
-        <img class="brand-logo" src="<?= e(asset('img/logo.webp')) ?>" width="140" height="140" alt="">
+        <img class="brand-logo" src="<?= e(asset('img/logo-mark.webp')) ?>" width="192" height="192" alt="">
       <?php endif; ?>
       <span class="brand-text">
         <span class="brand-name"><?= e($settings['site_name']) ?></span>

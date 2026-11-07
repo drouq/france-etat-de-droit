@@ -219,12 +219,12 @@ p { margin: 0 0 1em; }
 .hero-note { font-size: 0.875rem; color: var(--muted); margin: 0; }
 .hero-visual { display: flex; justify-content: center; }
 .hero-logo {
-  width: 12rem;
-  height: 12rem;
+  width: 13rem;
+  height: auto;
   object-fit: contain;
   background: var(--white);
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 1rem;
   box-shadow: 0 0 0 1px var(--line), 0 12px 32px rgba(10, 31, 77, 0.08);
 }
 .hero-image { border-radius: var(--radius); }
@@ -422,7 +422,7 @@ p { margin: 0 0 1em; }
 @media (min-width: 48rem) {
   :root { --gutter: 2rem; }
   .hero-inner { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); padding-top: 4rem; padding-bottom: 4.5rem; }
-  .hero-logo { width: 15rem; height: 15rem; }
+  .hero-logo { width: 18rem; }
   .support-grid { grid-template-columns: 1fr 1fr; }
   .footer-inner { grid-template-columns: 2fr 1fr 1fr; }
   .page-head { padding: 2.75rem 0 2.25rem; }
