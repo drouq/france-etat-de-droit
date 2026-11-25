@@ -30,7 +30,10 @@ $isHomePage = !empty($page) && (int) $page['is_home'] === 1;
         <?php if ($settings['tagline'] !== ''): ?><span class="brand-tagline"><?= e($settings['tagline']) ?></span><?php endif; ?>
       </span>
     </a>
-    <a class="btn btn-primary header-cta" href="<?= e(Settings::donUrl()) ?>">Faire un don</a>
+    <div class="header-actions">
+      <a class="btn btn-secondary header-cta" href="<?= e(Settings::adhesionUrl()) ?>">Adhérer</a>
+      <a class="btn btn-primary header-cta" href="<?= e(Settings::donUrl()) ?>">Faire un don</a>
+    </div>
   </div>
   <?php if ($menu): ?>
   <nav class="main-nav" aria-label="Menu principal">

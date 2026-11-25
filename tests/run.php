@@ -556,6 +556,7 @@ try {
     check('CSP header', strpos($header($home, 'Content-Security-Policy'), "frame-src https://www.youtube-nocookie.com https://player.vimeo.com") !== false);
     check('nosniff header', $header($home, 'X-Content-Type-Options') === 'nosniff');
     check('HelloAsso buttons', substr_count($home['body'], 'helloasso.com/associations/france-etat-de-droit') >= 3);
+    check('header has Adhérer and Faire un don buttons', preg_match('~<div class="header-actions">\s*<a class="btn btn-secondary header-cta" href="https://www\.helloasso\.com/[^"]*">Adhérer</a>\s*<a class="btn btn-primary header-cta" href="https://www\.helloasso\.com/[^"]*">Faire un don</a>~', $home['body']) === 1);
     check('one h1', substr_count($home['body'], '<h1') === 1);
     check('lang fr', strpos($home['body'], '<html lang="fr">') !== false);
     check('canonical and Open Graph', strpos($home['body'], 'rel="canonical"') !== false && strpos($home['body'], 'og:title') !== false && strpos($home['body'], 'twitter:card') !== false);

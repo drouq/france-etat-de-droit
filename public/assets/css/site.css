@@ -192,6 +192,7 @@ p { margin: 0 0 1em; }
 .btn-secondary { background: var(--white); color: var(--blue); }
 .btn-secondary:hover { background: var(--surface); color: var(--blue-dark); }
 .btn-large { font-size: 1.1rem; min-height: 3.4rem; padding: 0.85em 1.6em; }
+.header-actions { display: flex; flex: none; gap: 0.6rem; align-items: center; }
 .header-cta { flex: none; }
 
 /* ---------- Hero (home page) ---------- */
@@ -432,7 +433,10 @@ p { margin: 0 0 1em; }
   .brand-logo { width: 48px; height: 48px; }
   .brand-name { font-size: 1.1rem; }
   .brand-tagline { display: none; }
-  .header-cta { min-height: 2.5rem; padding: 0.45em 0.8em; font-size: 0.9rem; }
+  .header-inner { flex-wrap: wrap; row-gap: 0.6rem; }
+  .header-actions { width: 100%; gap: 0.5rem; }
+  .header-actions .header-cta { flex: 1; }
+  .header-cta { min-height: 2.5rem; padding: 0.45em 0.7em; font-size: 0.85rem; }
   .actions .btn { width: 100%; }
 }
 
@@ -441,6 +445,6 @@ p { margin: 0 0 1em; }
 }
 
 @media print {
-  .main-nav, .support, .header-cta, .skip-link, .video { display: none; }
+  .main-nav, .support, .header-actions, .skip-link, .video { display: none; }
   .site-footer { background: none; color: var(--ink); }
 }
